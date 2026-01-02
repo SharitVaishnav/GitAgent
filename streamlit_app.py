@@ -57,7 +57,7 @@ def call_agent_api(user_query: str, username: str, access_token: str, session_id
             "http://localhost:8000/agent/query",
             headers=headers,
             json=payload,
-            timeout=30
+            timeout=120  # Increased timeout to 120 seconds for repository caching operations
         )
         
         if response.status_code == 200:
@@ -114,6 +114,16 @@ def render_header():
             sub_col1, sub_col2 = st.columns([3, 1])
             with sub_col1:
                 st.write(f"**{user.get('login', 'User')}**")
+                
+                # New Session button
+                if st.button("🔄 New Session", key="new_session_btn", use_container_width=True):
+                    st.session_state.chat_history = []
+                    st.session_state.session_id = str(uuid.uuid4())
+                    st.success("New session started!")
+                    time.sleep(0.5)
+                    st.rerun()
+                
+                # Logout button
                 if st.button("Logout", key="logout_btn", use_container_width=True):
                      st.session_state.access_token = None
                      st.session_state.user_info = None

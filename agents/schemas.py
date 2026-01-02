@@ -7,17 +7,22 @@ from pydantic import BaseModel
 class UserContext:
     """Context information about the authenticated user."""
     github_username: str
+    model: str
     github_name: Optional[str]
     github_id: int
     session_id: Optional[str]
     timestamp: str
     access_token: str
     tool_executions: List[Dict[str, Any]] = None  # Track tool calls
+    repos_cache: Dict[str, Dict[str, Any]] = None  # Cache of repositories with file structures
+    
     
     def __post_init__(self):
-        """Initialize tool_executions as empty list if not provided."""
+        """Initialize tool_executions and repos_cache as empty if not provided."""
         if self.tool_executions is None:
             self.tool_executions = []
+        if self.repos_cache is None:
+            self.repos_cache = {}
 
 
 class AgentQueryRequest(BaseModel):

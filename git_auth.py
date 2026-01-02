@@ -21,7 +21,7 @@ def get_auth_url(redirect_uri: str) -> str:
         f"{AUTHORIZE_URL}?"
         f"client_id={CLIENT_ID}&"
         f"redirect_uri={redirect_uri}&"
-        f"scope=repo read:user&"
+        f"scope=repo delete_repo read:user&"
         f"state={state}"
     )
 
