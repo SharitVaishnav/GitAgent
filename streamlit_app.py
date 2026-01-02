@@ -5,6 +5,7 @@ import uuid
 from datetime import datetime
 from git_auth import get_auth_url, exchange_code
 from github_apis import get_user_impl
+import os
 
 st.set_page_config(
     page_title="GitHub Helper",
