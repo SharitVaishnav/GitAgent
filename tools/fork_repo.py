@@ -1,6 +1,6 @@
 import requests
 from agents import RunContextWrapper, function_tool
-from agents.schemas import UserContext
+from schemas import UserContext
 
 
 @function_tool
