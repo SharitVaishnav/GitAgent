@@ -78,12 +78,14 @@ async def process_agent_query(
             github_id=user_info.get('id', 0),
             session_id=request.session_id,
             timestamp=request.timestamp,
-            access_token=access_token
+            access_token=access_token,
+            model="openai/gpt-oss-120b"
         )
         
         # Get the user query
         user_query = request.query if request.query else f"Hello from {request.user}"
         
+
         # Fetch and format chat history
         history_context = fetch_chat_history(ctx.session_id)
         
