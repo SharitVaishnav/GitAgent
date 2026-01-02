@@ -1,6 +1,6 @@
 import requests
 from agents import RunContextWrapper, function_tool
-from agents.schemas import UserContext
+from schemas import UserContext
 
 
 @function_tool
@@ -20,6 +20,8 @@ def list_repos(ctx: RunContextWrapper[UserContext]) -> str:
     
     # Use authenticated user if no username provided
     target_user = user_ctx.github_username
+
+    username = user_ctx.github_username
     
     # Prepare input (what the tool received)
     tool_input = None
@@ -30,7 +32,7 @@ def list_repos(ctx: RunContextWrapper[UserContext]) -> str:
             # Fetch authenticated user's repos (can include private repos)
             api_url = "https://api.github.com/user/repos"
             params = {
-                "type": repo_type,
+                "type": "all",
                 "sort": "updated",
                 "per_page": 100
             }
