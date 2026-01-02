@@ -8,6 +8,8 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 from agents import Agent, OpenAIProvider
 from schemas import UserContext
 from tools.fetch_context import get_user_info
+from tools.list_repos import list_repos
+from tools.fork_repo import fork_repo
 
 
 def create_agent_system():
@@ -25,9 +27,13 @@ def create_agent_system():
 When users ask about themselves, their username, session, or personal information,
 use the get_user_info tool to retrieve their context information.
 
+When users ask about repositories, use the list_repos tool to retrieve their repository list.
+
+When users ask to fork a repository, use the fork_repo tool to fork the repository.
+
 Answer user queries concisely and directly.""",
         model=model,
-        tools=[get_user_info],
+        tools=[get_user_info, list_repos, fork_repo],
     )
     
     return agent
