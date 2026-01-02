@@ -53,8 +53,11 @@ def call_agent_api(user_query: str, username: str, access_token: str, session_id
         if session_id:
             payload["session_id"] = session_id
         
+        # Use environment variable for backend URL (production) or localhost (development)
+        backend_url = os.getenv("BACKEND_URL", "http://localhost:8000")
+        
         response = requests.post(
-            "http://localhost:8000/agent/query",
+            f"{backend_url}/agent/query",
             headers=headers,
             json=payload,
             timeout=120  # Increased timeout to 120 seconds for repository caching operations
@@ -143,7 +146,8 @@ def main():
     if code:
         try:
             with st.spinner("Authenticating..."):
-                token_data = exchange_code(code, "http://localhost:8501")
+                frontend_url = os.getenv("FRONTEND_URL", "http://localhost:8501")
+                token_data = exchange_code(code, frontend_url)
                 
                 if "error" in token_data:
                     st.error(f"Error: {token_data.get('error_description')}")
@@ -247,7 +251,9 @@ def main():
         with col2:
             st.warning("Please sign in to continue.")
             try:
-                auth_url = get_auth_url("http://localhost:8501")
+                # Use environment variable for frontend URL (production) or localhost (development)
+                frontend_url = os.getenv("FRONTEND_URL", "http://localhost:8501")
+                auth_url = get_auth_url(frontend_url)
                 st.link_button("Authorize with GitHub", auth_url, use_container_width=True)
             except ValueError as e:
                 st.error(f"Configuration Error: {e}")
