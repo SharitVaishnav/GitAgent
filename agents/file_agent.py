@@ -16,7 +16,7 @@ def create_file_agent():
         api_key=os.getenv("GROQ_API_KEY"),
         base_url="https://api.groq.com/openai/v1"
     )
-    model = provider.get_model("openai/gpt-oss-120b")
+    model = provider.get_model("moonshotai/kimi-k2-instruct")
     
     file_agent = Agent[UserContext](
         name="File Agent",

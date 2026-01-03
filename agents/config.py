@@ -15,7 +15,12 @@ from tools.delete_repo import delete_repo
 from tools.list_repo_files import list_repo_files
 from tools.cache_repo_structure import cache_repo_structure
 from tools.get_file_content import get_file_content
+from tools.create_branch import create_branch
+from tools.list_branches import list_branches
+from tools.list_pull_requests import list_pull_requests
+from tools.merge_pull_request import merge_pull_request
 from file_agent import create_file_agent
+from pr_agent import create_pr_agent
 
 
 def create_agent_system():
@@ -24,9 +29,10 @@ def create_agent_system():
         api_key=os.getenv("GROQ_API_KEY"),
         base_url="https://api.groq.com/openai/v1"
     )
-    model = provider.get_model("openai/gpt-oss-120b")
+    model = provider.get_model("moonshotai/kimi-k2-instruct")
     
     file_agent = create_file_agent()
+    pr_agent = create_pr_agent()
     
     # Create main agent with file_agent as a tool
     agent = Agent[UserContext](
@@ -55,6 +61,26 @@ Use this information to find the correct path and retry.
 
 When users want to cache or index repository structures for faster access, use the cache_repo_structure tool to recursively fetch and store all files and directories.
 
+When users want to create a branch:
+- Use create_branch tool to create a new branch from main or another branch
+- Provide git commands for them to checkout the branch locally
+
+When users want to see all branches:
+- Use list_branches tool to show all branches in the repository
+
+When users want to create a pull request:
+- Just call the pr_creation_agent tool
+- It will automatically fetch the parent repo if it is forked.
+
+When users want to see pull requests:
+- Use list_pull_requests tool to show open, closed, or all PRs
+- Default to showing open PRs
+
+When users want to merge a pull request:
+- Use merge_pull_request tool with PR number
+- Supports merge methods: "merge", "squash", or "rebase"
+- Ask for confirmation before merging
+
 Answer user queries concisely and directly.""",
         model=model,
         tools=[
@@ -65,6 +91,14 @@ Answer user queries concisely and directly.""",
             delete_repo, 
             list_repo_files, 
             cache_repo_structure,
+            create_branch,
+            list_branches,
+            list_pull_requests,
+            merge_pull_request,
+            pr_agent.as_tool(
+                tool_name="pr_creation_agent",
+                tool_description="Use this agent to create pull requests. It intelligently handles both fork and non-fork scenarios."
+            ),
             file_agent.as_tool(
                 tool_name="file_content_agent",
                 tool_description="Use this agent to fetch file content from a GitHub repository. Provide repo_name and file_path."

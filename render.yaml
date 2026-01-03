@@ -1,0 +1,69 @@
+services:
+  # PostgreSQL Database
+  - type: pserv
+    name: gitagent-db
+    env: docker
+    plan: free
+    databaseName: chat_history
+    databaseUser: gitagent_user
+    ipAllowList: []
+
+  # Backend API (FastAPI)
+  - type: web
+    name: gitagent-backend
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: cd agents && uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: GROQ_API_KEY
+        sync: false
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: DATABASE_URL
+        fromDatabase:
+          name: gitagent-db
+          property: connectionString
+      - key: POSTGRES_HOST
+        fromDatabase:
+          name: gitagent-db
+          property: host
+      - key: POSTGRES_PORT
+        fromDatabase:
+          name: gitagent-db
+          property: port
+      - key: POSTGRES_DB
+        fromDatabase:
+          name: gitagent-db
+          property: database
+      - key: POSTGRES_USER
+        fromDatabase:
+          name: gitagent-db
+          property: user
+      - key: POSTGRES_PASSWORD
+        fromDatabase:
+          name: gitagent-db
+          property: password
+
+  # Frontend (Streamlit)
+  - type: web
+    name: gitagent-frontend
+    env: python
+    region: oregon
+    plan: free
+    branch: main
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run streamlit_app.py --server.port=$PORT --server.address=0.0.0.0
+    envVars:
+      - key: GITHUB_CLIENT_ID
+        sync: false
+      - key: GITHUB_CLIENT_SECRET
+        sync: false
+      - key: BACKEND_URL
+        value: https://gitagent-backend.onrender.com
+      - key: FRONTEND_URL
+        value: https://gitagent-frontend.onrender.com
