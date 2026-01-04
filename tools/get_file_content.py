@@ -33,6 +33,32 @@ def get_file_content(ctx: RunContextWrapper[UserContext], repo_name: str, file_p
     }
     
     try:
+        # Check if repository is cached and validate file path
+        full_repo_name = f"{owner}/{repo}"
+        
+        if full_repo_name in user_ctx.repos_cache:
+            # Get all file paths from cache
+            cached_files = user_ctx.repos_cache[full_repo_name]['files']
+            all_file_paths = [f['path'] for f in cached_files if f['type'] == 'file']
+            
+            # Check if the exact file path exists
+            if file_path not in all_file_paths:
+                result = f"""Error: File '{file_path}' not found in repository '{full_repo_name}'.
+
+Available files in this repository:
+{chr(10).join(f"  - {path}" for path in sorted(all_file_paths))}
+
+Please choose the closest matching file from the list above and try again."""
+                
+                # Track this tool execution
+                user_ctx.tool_executions.append({
+                    "tool_name": "get_file_content",
+                    "input": tool_input,
+                    "output": result[:500] + "..." if len(result) > 500 else result
+                })
+                
+                return result
+        
         # GitHub API endpoint for file contents
         api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{file_path}"
         
