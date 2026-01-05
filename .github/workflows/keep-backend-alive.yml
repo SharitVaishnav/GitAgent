@@ -17,7 +17,7 @@ jobs:
         run: |
           echo "Pinging backend at $(date)"
           response=$(curl -s -o /dev/null -w "%{http_code}" https://gitagent-agent.onrender.com/health)
-          echo "Response code: $response"
+          echo "Backend response code: $response"
           
           if [ $response -eq 200 ]; then
             echo "✅ Backend is alive!"
@@ -25,5 +25,17 @@ jobs:
             echo "⚠️ Backend returned status code: $response"
           fi
       
+      - name: Ping Frontend
+        run: |
+          echo "Pinging frontend at $(date)"
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://gitagent-streamlit.onrender.com/)
+          echo "Frontend response code: $response"
+          
+          if [ $response -eq 200 ] || [ $response -eq 301 ] || [ $response -eq 302 ]; then
+            echo "✅ Frontend is alive!"
+          else
+            echo "⚠️ Frontend returned status code: $response"
+          fi
+      
       - name: Log Status
-        run: echo "Keep-alive ping completed at $(date)"
+        run: echo "Keep-alive ping completed for both services at $(date)"
