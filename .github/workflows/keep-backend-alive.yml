@@ -1,0 +1,29 @@
+name: Keep Backend Alive
+
+on:
+  schedule:
+    # Runs every 1 minute
+    - cron: '* * * * *'
+  
+  # Allows manual trigger from GitHub Actions tab
+  workflow_dispatch:
+
+jobs:
+  ping-backend:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Ping Backend Health Endpoint
+        run: |
+          echo "Pinging backend at $(date)"
+          response=$(curl -s -o /dev/null -w "%{http_code}" https://gitagent-agent.onrender.com/health)
+          echo "Response code: $response"
+          
+          if [ $response -eq 200 ]; then
+            echo "✅ Backend is alive!"
+          else
+            echo "⚠️ Backend returned status code: $response"
+          fi
+      
+      - name: Log Status
+        run: echo "Keep-alive ping completed at $(date)"
