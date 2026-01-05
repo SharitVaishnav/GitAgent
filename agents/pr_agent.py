@@ -17,7 +17,7 @@ def create_pr_agent():
         api_key=os.getenv("GROQ_API_KEY"),
         base_url="https://api.groq.com/openai/v1"
     )
-    model = provider.get_model("moonshotai/kimi-k2-instruct")
+    model = provider.get_model("meta-llama/llama-4-scout-17b-16e-instruct")
     
     pr_agent = Agent[UserContext](
         name="PR Agent",
@@ -28,7 +28,7 @@ Steps:
 2. If fork: Ask "PR to original repo or your fork?"
    - Original: Use parent repo with head_repo parameter
    - Own fork: Normal PR within fork
-3. If not fork: Normal PR within same repo
+3. If not fork: Normal PR within same repo, with head repo parameter as None.
 4. Ask for: branch, target branch, title, description
 5. Call create_pull_request
 

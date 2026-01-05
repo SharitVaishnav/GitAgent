@@ -21,6 +21,7 @@ from tools.list_pull_requests import list_pull_requests
 from tools.merge_pull_request import merge_pull_request
 from file_agent import create_file_agent
 from pr_agent import create_pr_agent
+from pr_review_agent import create_pr_review_agent
 
 
 def create_agent_system():
@@ -29,10 +30,11 @@ def create_agent_system():
         api_key=os.getenv("GROQ_API_KEY"),
         base_url="https://api.groq.com/openai/v1"
     )
-    model = provider.get_model("moonshotai/kimi-k2-instruct")
+    model = provider.get_model("moonshotai/kimi-k2-instruct-0905")
     
     file_agent = create_file_agent()
     pr_agent = create_pr_agent()
+    pr_review_agent = create_pr_review_agent()
     
     # Create main agent with file_agent as a tool
     agent = Agent[UserContext](
@@ -81,6 +83,11 @@ When users want to merge a pull request:
 - Supports merge methods: "merge", "squash", or "rebase"
 - Ask for confirmation before merging
 
+When users want to review a pull request:
+- Call the pr_review_agent tool
+- It will fetch the PR diff, analyze the code changes, and provide intelligent feedback
+- It can approve, request changes, or comment on the PR
+
 Answer user queries concisely and directly.""",
         model=model,
         tools=[
@@ -98,6 +105,10 @@ Answer user queries concisely and directly.""",
             pr_agent.as_tool(
                 tool_name="pr_creation_agent",
                 tool_description="Use this agent to create pull requests. It intelligently handles both fork and non-fork scenarios."
+            ),
+            pr_review_agent.as_tool(
+                tool_name="pr_review_agent",
+                tool_description="Use this agent to review pull requests. It fetches PR diffs, analyzes code quality, and submits reviews (approve, request changes, or comment)."
             ),
             file_agent.as_tool(
                 tool_name="file_content_agent",
