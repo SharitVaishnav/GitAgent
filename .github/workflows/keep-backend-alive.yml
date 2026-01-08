@@ -2,7 +2,7 @@ name: Keep Backend Alive
 
 on:
   schedule:
-    # Runs every 1 minute
+    # Runs every 10 minute
     - cron: '*/10 * * * *'
   
   # Allows manual trigger from GitHub Actions tab
