@@ -12,24 +12,15 @@ brew install postgresql@14
 brew services start postgresql@14
 ```
 
-**Or use Docker:**
-```bash
-docker run --name postgres-chat \
-  -e POSTGRES_PASSWORD=postgres \
-  -e POSTGRES_DB=chat_history \
-  -p 5432:5432 \
-  -d postgres:14
-```
-
 ## Configuration
 
 Update the `.env` file with your PostgreSQL credentials:
 
 ```env
-POSTGRES_HOST=localhost
-POSTGRES_PORT=5432
-POSTGRES_DB=chat_history
-POSTGRES_USER=postgres
+POSTGRES_HOST
+POSTGRES_PORT
+POSTGRES_D
+POSTGRES_USER
 POSTGRES_PASSWORD=your_password_here
 ```
 
