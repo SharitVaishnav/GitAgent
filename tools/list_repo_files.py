@@ -7,6 +7,7 @@ from schemas import UserContext
 def list_repo_files(ctx: RunContextWrapper[UserContext], repo_name: str, path: str = "") -> str:
     """
     List all files and directories in a GitHub repository.
+    Validates repo name against cached repositories and suggests alternatives if not found.
     
     Args:
         ctx: The run context wrapper containing user context
@@ -21,17 +22,42 @@ def list_repo_files(ctx: RunContextWrapper[UserContext], repo_name: str, path: s
     # Parse repository name
     if "/" in repo_name:
         owner, repo = repo_name.split("/", 1)
+        full_repo_name = f"{owner}/{repo}"
     else:
         owner = user_ctx.github_username
         repo = repo_name
+        full_repo_name = f"{owner}/{repo}"
     
     # Prepare input (what the tool received)
     tool_input = {
-        "repo_name": f"{owner}/{repo}",
+        "repo_name": full_repo_name,
         "path": path or "root"
     }
     
     try:
+        # Step 1: Check if repos are cached
+        if user_ctx.repos_cache:
+            # Step 2: Validate if the repository exists in cached repos
+            if full_repo_name not in user_ctx.repos_cache:
+                cached_repo_names = list(user_ctx.repos_cache.keys())
+                
+                result = f"""❌ Repository '{full_repo_name}' not found in cached repositories.
+
+You have {len(cached_repo_names)} cached repositories:
+"""
+                for idx, cached_repo in enumerate(cached_repo_names, 1):
+                    result += f"{idx}. {cached_repo}\n"
+                
+                # Track this tool execution
+                user_ctx.tool_executions.append({
+                    "tool_name": "list_repo_files",
+                    "input": tool_input,
+                    "output": result
+                })
+                
+                return result
+        
+        # Step 3: Proceed with listing files via GitHub API
         # GitHub API endpoint for repository contents
         api_url = f"https://api.github.com/repos/{owner}/{repo}/contents/{path}"
         

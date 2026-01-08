@@ -61,7 +61,7 @@ def call_agent_api(user_query: str, username: str, access_token: str, session_id
             f"{backend_url}/agent/query",
             headers=headers,
             json=payload,
-            timeout=120  # Increased timeout to 120 seconds for repository caching operations
+            timeout=240  # Increased timeout to 240 seconds for repository caching operations
         )
         
         if response.status_code == 200:

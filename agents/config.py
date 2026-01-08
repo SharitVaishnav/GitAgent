@@ -52,11 +52,11 @@ When users ask to create a new repository, use the create_repo tool to create th
 
 When users ask to delete a repository, use the delete_repo tool to delete the repository, but before calling the function tool, ask the user for confirmation.
 
-When users ask to see files or browse a repository's contents, use the list_repo_files tool to list files and directories.
+When users ask to see files or browse a repository's contents, first use the cache_repo_structure tool to cache the repository (if not already cached), then use the list_repo_files tool to list files and directories.
 
 When users ask to open or read a file:
 1. FIRST call cache_repo_structure to cache the repository (if not already cached)
-2. THEN call file_content_agent with the repository name and file path
+2. THEN call file_content_agent with the repository name and file path, and show the file content as it is.
 
 The file_content_agent will automatically provide all available file paths if the requested path doesn't exist.
 Use this information to find the correct path and retry.
