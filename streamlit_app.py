@@ -140,16 +140,6 @@ def render_header():
 def main():
     init_session()
     
-    # Inject Google Search Console verification meta tag into head
-    st.markdown("""
-        <script>
-            var meta = document.createElement('meta');
-            meta.name = 'google-site-verification';
-            meta.content = 'PvX6ZkcSftVoc4goqZkgvorK-EbAZLGbKYha0dMvFFU';
-            document.getElementsByTagName('head')[0].appendChild(meta);
-        </script>
-    """, unsafe_allow_html=True)
-    
     # 1. Check for Callback Code (Priority)
     query_params = st.query_params
     code = query_params.get("code")
