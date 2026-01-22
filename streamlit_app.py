@@ -140,6 +140,11 @@ def render_header():
 def main():
     init_session()
     
+    # Inject Google Search Console verification meta tag
+    st.components.v1.html("""
+        <meta name="google-site-verification" content="PvX6ZkcSftVoc4goqZkgvorK-EbAZLGbKYha0dMvFFU" />
+    """, height=0)
+    
     # 1. Check for Callback Code (Priority)
     query_params = st.query_params
     code = query_params.get("code")
