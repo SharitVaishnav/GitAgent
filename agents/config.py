@@ -30,7 +30,7 @@ def create_agent_system():
         api_key=os.getenv("GROQ_API_KEY"),
         base_url="https://api.groq.com/openai/v1"
     )
-    model = provider.get_model("moonshotai/kimi-k2-instruct-0905")
+    model = provider.get_model("openai/gpt-oss-120b")
     
     file_agent = create_file_agent()
     pr_agent = create_pr_agent()

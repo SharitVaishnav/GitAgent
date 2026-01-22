@@ -17,7 +17,7 @@ def create_pr_agent():
         api_key=os.getenv("GROQ_API_KEY"),
         base_url="https://api.groq.com/openai/v1"
     )
-    model = provider.get_model("meta-llama/llama-4-scout-17b-16e-instruct")
+    model = provider.get_model("openai/gpt-oss-120b")
     
     pr_agent = Agent[UserContext](
         name="PR Agent",
